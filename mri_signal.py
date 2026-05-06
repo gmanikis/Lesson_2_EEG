@@ -47,4 +47,50 @@ sample_volume = create_sample_mri()
 print(f"Sample volume created with shape: {sample_volume.shape}")
 print(f"Intensity range: [{sample_volume.min():.1f}, {sample_volume.max():.1f}]")
 
+#####################################################################################################################
+
+# =====================================================
+# 1.1 LOADING DICOM FILES
+# =====================================================
+
+def load_dicom_series(dicom_folder):
+    """
+    Load a series of DICOM files from a folder
+    
+    Parameters:
+    -----------
+    dicom_folder : str
+        Path to folder containing DICOM files
+        
+    Returns:
+    --------
+    volume : 3D numpy array
+    slices : list of pydicom objects
+    """
+    # Get all DICOM files
+    dicom_files = []
+    for root, dirs, files in os.walk(dicom_folder):
+        for file in files:
+            if file.endswith('.dcm'):
+                dicom_files.append(os.path.join(root, file))
+    
+    # Read DICOM files
+    slices = [pydicom.dcmread(f) for f in dicom_files]
+    
+    # Sort slices by Instance Number or Image Position
+    slices.sort(key=lambda x: float(x.ImagePositionPatient[2]))
+    
+    # Get the pixel arrays
+    image_stack = np.stack([s.pixel_array for s in slices])
+    
+    print(f"Loaded {len(slices)} DICOM slices")
+    print(f"Volume shape: {image_stack.shape}")
+    print(f"Data type: {image_stack.dtype}")
+    
+    return image_stack, slices
+
+# Example usage (students will replace with their own path)
+# dicom_folder = "path/to/your/dicom/folder"
+# volume_3d, dicom_slices = load_dicom_series(dicom_folder)
+
 
