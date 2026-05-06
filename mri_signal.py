@@ -217,4 +217,49 @@ def modify_intensities(volume, operation='multiply', value=1.5):
     
     return modified
 
+########################################################################################################
+
+def plot_histogram(volume, bins=50, title='Intensity Histogram'):
+    """
+    Plot 1D histogram of voxel intensities
+    
+    Parameters:
+    -----------
+    volume : 3D numpy array
+    bins : number of histogram bins
+    title : plot title
+    """
+    # Flatten the 3D volume to 1D
+    intensities = volume.flatten()
+    
+    # Create histogram
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+    
+    # Standard histogram
+    axes[0].hist(intensities, bins=bins, color='blue', alpha=0.7, edgecolor='black')
+    axes[0].set_xlabel('Intensity')
+    axes[0].set_ylabel('Frequency')
+    axes[0].set_title(title)
+    axes[0].grid(True, alpha=0.3)
+    
+    # Log scale histogram (useful for medical images)
+    axes[1].hist(intensities, bins=bins, color='green', alpha=0.7, edgecolor='black')
+    axes[1].set_xlabel('Intensity')
+    axes[1].set_ylabel('Frequency (log scale)')
+    axes[1].set_title(f'{title} (Log Scale)')
+    axes[1].set_yscale('log')
+    axes[1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Print statistics
+    print(f"Intensity Statistics:")
+    print(f"  Mean: {np.mean(intensities):.2f}")
+    print(f"  Std Dev: {np.std(intensities):.2f}")
+    print(f"  Min: {np.min(intensities):.2f}")
+    print(f"  Max: {np.max(intensities):.2f}")
+    print(f"  Median: {np.median(intensities):.2f}")
+    print(f"  25th percentile: {np.percentile(intensities, 25):.2f}")
+    print(f"  75th percentile: {np.percentile(intensities, 75):.2f}")
 
