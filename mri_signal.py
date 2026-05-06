@@ -127,5 +127,50 @@ def visualize_slices(volume, slice_indices=None, cmap='gray'):
     plt.tight_layout()
     plt.show()
 
+#######################################################################################################################
+
+# =====================================================
+# 1.4 ACCESSING AND MODIFYING PIXELS
+# =====================================================
+
+def explore_pixel_values(volume, z, y, x, region_size=3):
+    """
+    Explore pixel values around a specific location
+    
+    Parameters:
+    -----------
+    volume : 3D numpy array
+    z, y, x : coordinates
+    region_size : size of region to display around point
+    """
+    print(f"Pixel value at ({z}, {y}, {x}): {volume[z, y, x]:.2f}")
+    
+    # Extract a small region around the point
+    half_size = region_size // 2
+    region = volume[
+        max(0, z-half_size):min(volume.shape[0], z+half_size+1),
+        max(0, y-half_size):min(volume.shape[1], y+half_size+1),
+        max(0, x-half_size):min(volume.shape[2], x+half_size+1)
+    ]
+    
+    print(f"\nRegion around point ({region.shape}):")
+    print(region[region.shape[0]//2, :, :])
+    
+    # Visualize
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # Show slice with marked point
+    axes[0].imshow(volume[z, :, :], cmap='gray')
+    axes[0].plot(x, y, 'r+', markersize=15, markeredgewidth=2)
+    axes[0].set_title(f'Slice {z} with marked point')
+    axes[0].axis('off')
+    
+    # Show zoomed region
+    axes[1].imshow(region[region.shape[0]//2, :, :], cmap='gray')
+    axes[1].set_title(f'Zoomed region around ({y}, {x})')
+    axes[1].axis('off')
+    
+    plt.tight_layout()
+    plt.show()
 
 
