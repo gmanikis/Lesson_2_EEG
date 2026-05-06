@@ -173,4 +173,48 @@ def explore_pixel_values(volume, z, y, x, region_size=3):
     plt.tight_layout()
     plt.show()
 
+##################################################################################################################
+
+# =====================================================
+# 1.5 MODIFYING PIXEL INTENSITIES
+# =====================================================
+
+def modify_intensities(volume, operation='multiply', value=1.5):
+    """
+    Modify pixel intensities in various ways
+    
+    Parameters:
+    -----------
+    volume : 3D numpy array
+    operation : 'multiply', 'add', 'threshold', 'window'
+    value : parameter for the operation
+    
+    Returns:
+    --------
+    modified_volume : 3D numpy array
+    """
+    modified = volume.copy()
+    
+    if operation == 'multiply':
+        modified = modified * value
+        print(f"Multiplied intensities by {value}")
+        
+    elif operation == 'add':
+        modified = modified + value
+        print(f"Added {value} to all intensities")
+        
+    elif operation == 'threshold':
+        modified[modified < value] = 0
+        print(f"Applied threshold at {value}")
+        
+    elif operation == 'window':
+        # Window/Level operation (common in medical imaging)
+        window_width, window_level = value
+        lower = window_level - window_width / 2
+        upper = window_level + window_width / 2
+        modified = np.clip(modified, lower, upper)
+        print(f"Applied window: width={window_width}, level={window_level}")
+    
+    return modified
+
 
