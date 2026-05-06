@@ -93,4 +93,39 @@ def load_dicom_series(dicom_folder):
 # dicom_folder = "path/to/your/dicom/folder"
 # volume_3d, dicom_slices = load_dicom_series(dicom_folder)
 
+##############################################################################################
+
+# =====================================================
+# 1.3 VISUALIZING 3D MRI SLICES
+# =====================================================
+
+def visualize_slices(volume, slice_indices=None, cmap='gray'):
+    """
+    Visualize multiple slices from a 3D volume
+    
+    Parameters:
+    -----------
+    volume : 3D numpy array
+    slice_indices : list of slice indices to display
+    cmap : colormap for display
+    """
+    if slice_indices is None:
+        # Show beginning, middle, and end slices
+        slice_indices = [0, volume.shape[0]//2, volume.shape[0]-1]
+    
+    fig, axes = plt.subplots(1, len(slice_indices), figsize=(15, 5))
+    
+    if len(slice_indices) == 1:
+        axes = [axes]
+    
+    for idx, slice_num in enumerate(slice_indices):
+        axes[idx].imshow(volume[slice_num, :, :], cmap=cmap)
+        axes[idx].set_title(f'Slice {slice_num}')
+        axes[idx].axis('off')
+        axes[idx].set_xlabel(f'Min: {volume[slice_num].min():.0f}, Max: {volume[slice_num].max():.0f}')
+    
+    plt.tight_layout()
+    plt.show()
+
+
 
