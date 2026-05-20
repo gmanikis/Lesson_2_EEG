@@ -30,3 +30,36 @@ def classify_kinetics(change, roi, up_thr=15, plat_lo=-5, plat_hi=15):
     cmap[plateau] = 2
     cmap[washout] = 3
     return cmap
+
+
+
+def kinetic_features(pre, post, mask):
+    """Return (features dict, colormap) for one case. Mirrors the original pipeline."""
+    roi = mask > 0
+    if not roi.any():
+        return {}, np.zeros_like(pre, dtype=np.uint8)
+
+    change = percent_enhancement(pre, post)
+    cmap   = classify_kinetics(change, roi)
+
+    n_roi = int(roi.sum())
+    feats = {
+        "total_roi_pixels":   n_roi,
+        "uptake_percentage":  (cmap == 1).sum() / n_roi * 100,
+        "plateau_percentage": (cmap == 2).sum() / n_roi * 100,
+        "washout_percentage": (cmap == 3).sum() / n_roi * 100,
+    }
+    # simple intensity statistics at each timepoint
+    for tp, img in [("t0", pre), ("t1", post)]:
+        vals = img[roi]
+        feats[f"{tp}_mean_intensity"]   = float(np.mean(vals))
+        feats[f"{tp}_std_intensity"]    = float(np.std(vals))
+    # statistics of the change itself
+    cv = change[roi]
+    feats["mean_intensity_change"]   = float(np.mean(cv))
+    feats["median_intensity_change"] = float(np.median(cv))
+    return feats, cmap
+
+feats, cmap = kinetic_features(pre, post, mask)
+for k, v in feats.items():
+    print(f"  {k:28s} = {v:.2f}")
