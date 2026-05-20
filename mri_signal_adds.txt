@@ -1,0 +1,12 @@
+def load_nifti(path):
+    """Load a .nii.gz file. Returns (data: np.ndarray, img: nib object)."""
+    img  = nib.load(path)
+    data = img.get_fdata()
+    return data, img
+
+def describe_volume(name, data):
+    """Print a quick quality-control summary of a 3D volume."""
+    print(f"{name:>26s} | shape={tuple(data.shape)} "
+          f"| dtype={data.dtype} "
+          f"| range=[{data.min():.1f}, {data.max():.1f}] "
+          f"| mean={data.mean():.1f}")
