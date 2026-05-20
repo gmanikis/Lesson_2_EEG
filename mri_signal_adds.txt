@@ -10,3 +10,23 @@ def describe_volume(name, data):
           f"| dtype={data.dtype} "
           f"| range=[{data.min():.1f}, {data.max():.1f}] "
           f"| mean={data.mean():.1f}")
+
+
+return (post - pre) / (pre + eps) * 100.0
+
+
+
+def classify_kinetics(change, roi, up_thr=15, plat_lo=-5, plat_hi=15):
+    """
+    Build the colormap of kinetic classes (uint8):
+        0 = background, 1 = uptake, 2 = plateau, 3 = washout
+    Only voxels inside `roi` (boolean) are classified.
+    """
+    cmap = np.zeros(change.shape, dtype=np.uint8)
+    uptake  = (change >  up_thr) & roi
+    plateau = (change <= plat_hi) & (change >= plat_lo) & roi
+    washout = (change <  plat_lo) & roi
+    cmap[uptake]  = 1
+    cmap[plateau] = 2
+    cmap[washout] = 3
+    return cmap
