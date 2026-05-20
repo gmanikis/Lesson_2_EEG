@@ -63,3 +63,27 @@ def kinetic_features(pre, post, mask):
 feats, cmap = kinetic_features(pre, post, mask)
 for k, v in feats.items():
     print(f"  {k:28s} = {v:.2f}")
+
+
+
+
+def plot_colormap(case_id, pre, colormap, mask, ax=None):
+    """Overlay the kinetic class map on the grey anatomical image."""
+    roi_slices = [z for z in range(colormap.shape[2]) if mask[:, :, z].any()]
+    z = roi_slices[len(roi_slices)//2] if roi_slices else colormap.shape[2]//2
+
+    own = ax is None
+    if own:
+        fig, ax = plt.subplots(figsize=(6, 5))
+    ax.imshow(pre[:, :, z].T, cmap="gray", origin="lower")
+    im = ax.imshow(colormap[:, :, z].T, cmap=KINETIC_CMAP, vmin=0, vmax=3,
+                   origin="lower", alpha=0.7)
+    cbar = plt.colorbar(im, ax=ax, ticks=[0.375, 1.125, 1.875, 2.625],
+                        fraction=0.046, pad=0.04)
+    cbar.ax.set_yticklabels(["Background", "Uptake", "Plateau", "Washout"])
+    ax.set_title(f"Kinetic map — {case_id} (z={z})")
+    ax.axis("off")
+    if own:
+        plt.tight_layout(); plt.show()
+
+plot_colormap("CENTER_A_001", pre, cmap, mask)
